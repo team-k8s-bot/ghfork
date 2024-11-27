@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: echo
+        run: |
           echo "github.triggering_actor ${{ github.triggering_actor }}"
           echo "github.actor ${{ github.actor }}"
 
