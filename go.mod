@@ -3,7 +3,7 @@ module ghfork
 go 1.23.2
 
 require (
-	cloud.google.com/go/container v1.40.0
+	cloud.google.com/go/container v1.42.0
 	github.com/go-logr/logr v1.4.2
 )
 
