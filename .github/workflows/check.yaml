@@ -18,6 +18,8 @@ on:
 
 jobs:
   check-permission:
+    with:
+      pr_user_login: ${{ github.event.pull_request.user.login }}
     uses: ./.github/workflows/_permission_check.yaml
     secrets: inherit
 

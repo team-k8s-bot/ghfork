@@ -5,6 +5,11 @@ name: permission check
 
 on:
   workflow_call:
+    inputs:
+      pr_user_login:
+        description: Pull request user login (if the causing event was a pull request).
+        required: false
+        type: string
 
 jobs:
   check-permission:
@@ -29,7 +34,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: check user permission
-        if: github.triggering_actor != 'dependabot[bot]' && github.triggering_actor != 'renovate[bot]' && steps.checkAccess.outputs.require-result == 'false'
+        if: |
+          !(
+            ${{ inputs.pr_user_login }} == '' ||
+            (${{ inputs.pr_user_login }} == 'dependabot[bot]' && github.triggering_actor != 'dependabot[bot]') ||
+            (${{ inputs.pr_user_login }} == 'renovate[bot]' && github.triggering_actor != 'renovate[bot]')
+          )
+          &&
+          steps.checkAccess.outputs.require-result == 'false'
         run: |
           echo "${{ github.triggering_actor }} does not have permissions on this repo."
           echo "Current permission level is ${{ steps.checkAccess.outputs.user-permission }}"
