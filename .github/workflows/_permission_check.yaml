@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Logging
+        continue-on-error: true
         run: |
           echo "${{toJSON(github.event)}}"
 
@@ -35,13 +36,16 @@ jobs:
 
       - name: check user permission
         if: |
-          !(
-            ${{ inputs.pr_user_login }} == '' ||
-            (${{ inputs.pr_user_login }} == 'dependabot[bot]' && github.triggering_actor != 'dependabot[bot]') ||
-            (${{ inputs.pr_user_login }} == 'renovate[bot]' && github.triggering_actor != 'renovate[bot]')
+          (
+            !(
+              (${{ inputs.pr_user_login }} == 'dependabot[bot]' && github.triggering_actor != 'dependabot[bot]') ||
+              (${{ inputs.pr_user_login }} == 'renovate[bot]' && github.triggering_actor != 'renovate[bot]')
+            )
+            &&
+            steps.checkAccess.outputs.require-result == 'false'
           )
-          &&
-          steps.checkAccess.outputs.require-result == 'false'
+          ||
+          ( ${{ inputs.pr_user_login }} != '' && steps.checkAccess.outputs.require-result == 'false' )
         run: |
           echo "${{ github.triggering_actor }} does not have permissions on this repo."
           echo "Current permission level is ${{ steps.checkAccess.outputs.user-permission }}"

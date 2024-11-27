@@ -28,5 +28,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Logging
+        continue-on-error: true
         run: |
           echo "${{toJSON(github.event)}}"
